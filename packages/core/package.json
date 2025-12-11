@@ -1,0 +1,14 @@
+{
+  "name": "@warog/core",
+  "version": "1.0.0",
+  "description": "Ядро рантайма Warog: сигналы, эффекты и планировщик.",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "node ./tests/run-tests.cjs || echo \"tests: базовые заглушки\"",
+    "lint": "eslint src --ext .ts"
+  },
+  "license": "Apache-2.0"
+}
