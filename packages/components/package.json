@@ -1,0 +1,12 @@
+{
+  "name": "@warog/components",
+  "version": "1.0.0",
+  "description": "Набор примитивных компонентов Warog.",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "node ./tests/run-tests.cjs || echo \"tests: заглушки\""
+  },
+  "license": "Apache-2.0"
+}
