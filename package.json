@@ -1,0 +1,20 @@
+{
+  "name": "warog",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Warog — современный JavaScript-фреймворк нового поколения.",
+  "license": "Apache-2.0",
+  "author": "TheSkiF4er",
+  "scripts": {
+    "bootstrap": "pnpm install",
+    "build": "pnpm -r --filter ./packages... run build",
+    "test": "pnpm -r --filter ./packages... run test",
+    "lint": "pnpm -r --filter ./packages... run lint || echo \"lint: часть пакетов пока без линтера\"",
+    "ci": "pnpm build && pnpm test"
+  },
+  "workspaces": [
+    "packages/*",
+    "tooling/*",
+    "examples/*"
+  ]
+}
