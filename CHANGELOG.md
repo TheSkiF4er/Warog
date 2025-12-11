@@ -3,7 +3,7 @@
 Все заметные изменения в этом проекте будут документироваться в этом файле.
 
 Формат основан на принципах [Keep a Changelog](https://keepachangelog.com/ru/1.0.0/).  
-Версияing: [SemVer](https://semver.org/lang/ru/).
+Версия: [SemVer](https://semver.org/lang/ru/).
 
 ---
 
