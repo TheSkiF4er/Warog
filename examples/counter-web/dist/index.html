@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Warog Counter</title>
+    <script type="importmap">
+      {
+        "imports": {
+          "@warog/core": "./vendor/core.js",
+          "@warog/dom": "./vendor/dom.js",
+          "@warog/dom/jsx-runtime": "./vendor/dom.js"
+        }
+      }
+    </script>
+    <style>
+      :root { color-scheme: dark; font-family: Inter, ui-sans-serif, system-ui, sans-serif; }
+      body { margin: 0; background: #0b1020; color: #e5e7eb; }
+      .app { max-width: 960px; margin: 0 auto; padding: 48px 20px; }
+      .lead { color: #94a3b8; }
+      .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+      .card { background: rgba(15, 23, 42, 0.9); border: 1px solid rgba(148, 163, 184, 0.2); border-radius: 18px; padding: 20px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25); }
+      .actions { display: flex; flex-wrap: wrap; gap: 10px; }
+      button { border: 0; border-radius: 12px; padding: 10px 14px; cursor: pointer; background: #2563eb; color: white; font: inherit; }
+      button:hover { filter: brightness(1.08); }
+    </style>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="module" src="./index.js"></script>
+  </body>
+</html>
