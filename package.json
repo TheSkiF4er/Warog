@@ -1,0 +1,33 @@
+{
+  "name": "warog",
+  "private": true,
+  "version": "0.4.0",
+  "description": "Warog monorepo for the signal-first UI framework",
+  "license": "MIT",
+  "packageManager": "npm@10.8.2",
+  "engines": {
+    "node": ">=20.11"
+  },
+  "workspaces": [
+    "packages/*",
+    "examples/*"
+  ],
+  "scripts": {
+    "build": "npm --workspace @warog/core run build && npm --workspace @warog/compiler run build && npm --workspace @warog/dom run build && npm --workspace @warog/router run build && npm --workspace @warog/ssr run build && npm --workspace @warog/example-counter-web run build && npm --workspace warog-counter-example run build",
+    "check": "npm --workspace @warog/core run check && npm --workspace @warog/compiler run check && npm --workspace @warog/dom run check && npm --workspace @warog/router run check && npm --workspace @warog/ssr run check && npm --workspace @warog/example-counter-web run check && npm --workspace warog-counter-example run check",
+    "test": "npm --workspace @warog/core run test && npm --workspace @warog/compiler run test && npm --workspace @warog/dom run test && npm --workspace @warog/router run test && npm --workspace @warog/ssr run test && npm --workspace @warog/example-counter-web run test && npm --workspace warog-counter-example run test",
+    "lint": "npm --workspace @warog/core run lint && npm --workspace @warog/compiler run lint && npm --workspace @warog/dom run lint && npm --workspace @warog/router run lint && npm --workspace @warog/ssr run lint && npm --workspace @warog/example-counter-web run lint && npm --workspace warog-counter-example run lint",
+    "verify": "npm run build && npm run lint && npm run check && npm run test"
+  },
+  "keywords": [
+    "warog",
+    "signals",
+    "framework",
+    "ui",
+    "reactivity"
+  ],
+  "devDependencies": {
+    "typescript": "^5.7.3",
+    "@types/node": "^22.13.10"
+  }
+}
