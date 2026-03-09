@@ -1,0 +1,16 @@
+{
+  "name": "@warog/example-counter-web",
+  "private": true,
+  "version": "0.3.0",
+  "type": "module",
+  "scripts": {
+    "build": "tsc -p tsconfig.json && cp src/index.html dist/index.html && node scripts-build.mjs",
+    "check": "tsc -p tsconfig.json --noEmit",
+    "lint": "tsc -p tsconfig.json --noEmit",
+    "test": "npm run build"
+  },
+  "dependencies": {
+    "@warog/core": "file:../../packages/core",
+    "@warog/dom": "file:../../packages/dom"
+  }
+}
