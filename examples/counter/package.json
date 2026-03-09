@@ -1,0 +1,15 @@
+{
+  "name": "warog-counter-example",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@warog/core": "file:../../packages/core"
+  },
+  "version": "0.3.0",
+  "scripts": {
+    "build": "node index.js",
+    "check": "node index.js",
+    "lint": "node index.js",
+    "test": "node index.js"
+  }
+}
