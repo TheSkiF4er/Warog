@@ -84,7 +84,3 @@ Each public package is ready for npm publication:
 - `@warog/router`
 - `@warog/ssr`
 - `@warog/compiler`
-
-## License
-
-MIT
