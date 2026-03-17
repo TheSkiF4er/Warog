@@ -1,6 +1,6 @@
 {
   "name": "@warog/ssr",
-  "version": "0.4.0",
+  "version": "0.3.0",
   "description": "Server-side rendering helpers for Warog",
   "type": "module",
   "license": "MIT",
@@ -13,7 +13,10 @@
       "default": "./dist/index.js"
     }
   },
-  "files": ["dist", "README.md"],
+  "files": [
+    "dist",
+    "README.md"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/example/warog.git",
@@ -30,7 +33,7 @@
     "build": "tsc -p tsconfig.json",
     "check": "tsc -p tsconfig.json --noEmit",
     "lint": "tsc -p tsconfig.json --noEmit",
-    "test": "npm run build && node --test dist/index.test.js"
+    "test": "npm run build && node --test dist/*.test.js"
   },
   "dependencies": {
     "@warog/dom": "file:../dom"
