@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Warog SSR Demo</title>
+  </head>
+  <body>
+    <div id="app"><main class="app"><h1>Warog SSR + hydration demo</h1><p class="lead">Server-rendered HTML, client hydration, controlled inputs, keyed lists, context and an SSR-safe error boundary.</p><div class="grid"><section class="card"><h2>SSR + hydration forms</h2><div><div class="stack"><label><span>Text input</span><input value="Hello Warog"></label><label><input type="checkbox"><span>Completed</span></label><label><span>Select flavor</span><select value="vanilla"><option value="vanilla">Vanilla</option><option value="chocolate">Chocolate</option><option value="strawberry">Strawberry</option></select></label><label><span>Textarea</span><textarea value="Hydrated from SSR"></textarea></label><pre class="preview">{
+  &quot;text&quot;: &quot;Hello Warog&quot;,
+  &quot;done&quot;: false,
+  &quot;flavor&quot;: &quot;vanilla&quot;,
+  &quot;notes&quot;: &quot;Hydrated from SSR&quot;
+}</pre></div></div></section><section class="card"><h2>Keyed list hydration stability</h2><div><div class="stack"><div class="actions"><button>Reorder</button><button>Add item</button><button>Toggle theme</button><button>Toggle hint</button></div><span class="badge badge-light">theme: light</span><p class="muted">This block intentionally changes shape to exercise hydration diagnostics.</p><ul><li>Milk</li><li>Bread</li><li>Cheese</li></ul></div></div></section><section class="card"><h2>Error boundary</h2><div><p class="muted">Type “boom” to trigger the boundary fallback.</p></div></section></div></main></div>
+    <script type="module" src="./index.js"></script>
+  </body>
+</html>
