@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@warog/core": "file:../../packages/core",
-    "@warog/dom": "file:../../packages/dom"
+    "@warog/dom": "file:../../packages/dom",
+    "@warog/ssr": "file:../../packages/ssr"
   }
 }
