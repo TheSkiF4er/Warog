@@ -15,5 +15,12 @@
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "isolatedModules": true,
+    "baseUrl": ".",
+    "paths": {
+      "@warog/core": ["packages/core/dist/index.d.ts"],
+      "@warog/dom": ["packages/dom/dist/index.d.ts"],
+      "@warog/dom/jsx-runtime": ["packages/dom/dist/index.d.ts"],
+      "@warog/ssr": ["packages/ssr/dist/index.d.ts"]
+    }
   }
 }
