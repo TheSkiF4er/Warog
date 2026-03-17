@@ -824,19 +824,135 @@ function reportHydrationMismatch(options: RenderOptions | undefined, code: Hydra
   options?.onHydrationMismatch?.({ code, message });
 }
 
-export function hydrate(target: Element | DocumentFragment, child: WarogChild, options?: RenderOptions): Cleanup {
-  const expected = toVNode(child);
-  const existing = target.firstChild;
-  if (!existing) {
-    reportHydrationMismatch(options, "missing-node", "Hydration target is empty; falling back to mount.");
-  } else if (expected?.type === TEXT_NODE && !isTextNode(existing)) {
-    reportHydrationMismatch(options, "node-type-mismatch", "Expected text node during hydration.");
-  } else if (expected?.type === TEXT_NODE && isTextNode(existing) && existing.nodeValue !== String(expected.props.nodeValue)) {
-    reportHydrationMismatch(options, "text-mismatch", `Hydration text mismatch: expected \"${String(expected.props.nodeValue)}\".`);
-  } else if (expected && typeof expected.type === "string" && isElementNode(existing) && existing.tagName.toLowerCase() !== String(expected.type).toLowerCase()) {
-    reportHydrationMismatch(options, "tag-mismatch", `Hydration tag mismatch: expected <${String(expected.type)}> but found <${existing.tagName.toLowerCase()}>.`);
+interface HydrationShapeText {
+  kind: "text";
+  value: string;
+}
+
+interface HydrationShapeElement {
+  kind: "element";
+  tag: string;
+  children: HydrationShapeNode[];
+}
+
+type HydrationShapeNode = HydrationShapeText | HydrationShapeElement;
+
+function resolveHydrationShape(node: WarogChild): HydrationShapeNode[] {
+  if (node == null || typeof node === "boolean") return [];
+  if (Array.isArray(node)) return node.flatMap((child) => resolveHydrationShape(child));
+  if (typeof node === "function") return resolveHydrationShape(node());
+  if (typeof node === "string" || typeof node === "number") return [{ kind: "text", value: String(node) }];
+  if (!isVNode(node)) return [];
+  if (node.type === Fragment) return resolveHydrationShape(node.props.children);
+  if (typeof node.type === "symbol") {
+    if ((node.type as symbol) === ERROR_BOUNDARY_TYPE) {
+      return resolveHydrationShape(((node.props as unknown) as ErrorBoundaryProps).children ?? null);
+    }
+    return [];
   }
-  return render(target, child);
+  if (typeof node.type === "function") {
+    const provider = node.type as Partial<ProviderComponent<unknown>>;
+    if (provider.$$typeof === PROVIDER_TYPE) {
+      return resolveHydrationShape(node.props.children);
+    }
+    return resolveHydrationShape((node.type as Component<Record<string, unknown>>)(node.props as Record<string, unknown>));
+  }
+  return [{ kind: "element", tag: String(node.type).toLowerCase(), children: resolveHydrationShape(node.props.children) }];
+}
+
+function compareHydrationShape(domNodes: Node[], expectedNodes: HydrationShapeNode[], options: RenderOptions | undefined, path = "root"): void {
+  const max = Math.max(domNodes.length, expectedNodes.length);
+  for (let index = 0; index < max; index += 1) {
+    const existing = domNodes[index] ?? null;
+    const expected = expectedNodes[index] ?? null;
+    if (!existing && expected) {
+      reportHydrationMismatch(options, "missing-node", `Hydration missing node at ${path}[${index}].`);
+      continue;
+    }
+    if (existing && !expected) {
+      reportHydrationMismatch(options, "missing-node", `Hydration extra DOM node at ${path}[${index}].`);
+      continue;
+    }
+    if (!existing || !expected) continue;
+
+    if (expected.kind === "text") {
+      if (!isTextNode(existing)) {
+        reportHydrationMismatch(options, "node-type-mismatch", `Expected text node at ${path}[${index}].`);
+        continue;
+      }
+      if ((existing.nodeValue ?? "") !== expected.value) {
+        reportHydrationMismatch(options, "text-mismatch", `Hydration text mismatch at ${path}[${index}]: expected "${expected.value}" but found "${existing.nodeValue ?? ""}".`);
+      }
+      continue;
+    }
+
+    if (!isElementNode(existing)) {
+      reportHydrationMismatch(options, "node-type-mismatch", `Expected element <${expected.tag}> at ${path}[${index}].`);
+      continue;
+    }
+    const actualTag = existing.tagName.toLowerCase();
+    if (actualTag !== expected.tag) {
+      reportHydrationMismatch(options, "tag-mismatch", `Hydration tag mismatch at ${path}[${index}]: expected <${expected.tag}> but found <${actualTag}>.`);
+      continue;
+    }
+    compareHydrationShape(Array.from(existing.childNodes), expected.children, options, `${path}[${index}]<${expected.tag}>`);
+  }
+}
+
+interface FormControlSnapshot {
+  tag: string;
+  type: string;
+  value?: string;
+  checked?: boolean;
+  selected?: boolean;
+}
+
+function collectFormControlSnapshots(node: Node, acc: FormControlSnapshot[] = []): FormControlSnapshot[] {
+  if (isElementNode(node)) {
+    const tag = node.tagName.toLowerCase();
+    if (tag === "input" || tag === "textarea" || tag === "select" || tag === "option") {
+      const record = node as Element & { type?: string; value?: string; checked?: boolean; selected?: boolean };
+      const snapshot: FormControlSnapshot = {
+        tag,
+        type: String(record.type ?? "")
+      };
+      if (typeof record.value === "string") snapshot.value = record.value;
+      if (typeof record.checked === "boolean") snapshot.checked = record.checked;
+      if (typeof record.selected === "boolean") snapshot.selected = record.selected;
+      acc.push(snapshot);
+    }
+  }
+  for (const child of Array.from(node.childNodes)) collectFormControlSnapshots(child, acc);
+  return acc;
+}
+
+function restoreFormControlSnapshots(node: Node, snapshots: FormControlSnapshot[], cursor: { index: number }): void {
+  if (isElementNode(node)) {
+    const tag = node.tagName.toLowerCase();
+    if (tag === "input" || tag === "textarea" || tag === "select" || tag === "option") {
+      const snapshot = snapshots[cursor.index];
+      cursor.index += 1;
+      if (snapshot && snapshot.tag === tag) {
+        const record = node as Element & { value?: string; checked?: boolean; selected?: boolean };
+        if (snapshot.value !== undefined && "value" in record) record.value = snapshot.value;
+        if (snapshot.checked !== undefined && "checked" in record) record.checked = snapshot.checked;
+        if (snapshot.selected !== undefined && "selected" in record) record.selected = snapshot.selected;
+      }
+    }
+  }
+  for (const child of Array.from(node.childNodes)) restoreFormControlSnapshots(child, snapshots, cursor);
+}
+
+export function hydrate(target: Element | DocumentFragment, child: WarogChild, options?: RenderOptions): Cleanup {
+  if (!target.firstChild) {
+    reportHydrationMismatch(options, "missing-node", "Hydration target is empty; falling back to mount.");
+  } else {
+    compareHydrationShape(Array.from(target.childNodes), resolveHydrationShape(child), options);
+  }
+  const snapshots = collectFormControlSnapshots(target);
+  const dispose = render(target, child);
+  restoreFormControlSnapshots(target, snapshots, { index: 0 });
+  return dispose;
 }
 
 export function jsx<P>(type: WarogVNode<P>["type"], props: P & { children?: WarogChild }, key?: string): WarogVNode<P> {
