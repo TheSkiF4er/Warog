@@ -5,7 +5,8 @@
     "outDir": "dist",
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
     "jsx": "react-jsx",
-    "jsxImportSource": "@warog/dom"
+    "jsxImportSource": "@warog/dom",
+    "types": []
   },
   "include": ["src/**/*"]
 }
