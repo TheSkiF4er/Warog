@@ -30,3 +30,8 @@ function App() {
 
 render(document.getElementById("app")!, <App />);
 ```
+
+
+## Internal runtime notes
+
+See `RuntimeContract.md` for the current internal component lifecycle and vnode/tree contract used by the DOM renderer.
